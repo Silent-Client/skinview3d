@@ -38,7 +38,7 @@
 			display: inline;
 		}
 
-		.control + .control {
+		.control+.control {
 			margin-left: 10px;
 		}
 
@@ -122,15 +122,19 @@
 				<label class="control">Height: <input id="canvas_height" type="number" value="300" size="4"></label>
 			</div>
 			<div>
-				<label class="control">FOV: <input id="fov" type="number" value="70" step="1" min="1" max="179" size="2"></label>
-				<label class="control">Zoom: <input id="zoom" type="number" value="0.90" step="0.01" min="0.01" max="2.00" size="4"></label>
+				<label class="control">FOV: <input id="fov" type="number" value="70" step="1" min="1" max="179"
+						size="2"></label>
+				<label class="control">Zoom: <input id="zoom" type="number" value="0.90" step="0.01" min="0.01" max="2.00"
+						size="4"></label>
 			</div>
 		</div>
 
 		<div class="control-section">
 			<h1>Light</h1>
-			<label class="control">Global: <input id="global_light" type="number" value="0.40" step="0.01" min="0.00" max="2.00" size="4"></label>
-			<label class="control">Camera: <input id="camera_light" type="number" value="0.60" step="0.01" min="0.00" max="2.00" size="4"></label>
+			<label class="control">Global: <input id="global_light" type="number" value="0.40" step="0.01" min="0.00"
+					max="2.00" size="4"></label>
+			<label class="control">Camera: <input id="camera_light" type="number" value="0.60" step="0.01" min="0.00"
+					max="2.00" size="4"></label>
 		</div>
 
 		<div class="control-section">
@@ -209,7 +213,8 @@
 			<h1>Skin</h1>
 			<div>
 				<div class="control">
-					<label>URL: <input id="skin_url" type="text" value="img/hatsune_miku.png" placeholder="none" list="default_skins" size="20"></label>
+					<label>URL: <input id="skin_url" type="text" value="img/hatsune_miku.png" placeholder="none"
+							list="default_skins" size="20"></label>
 					<datalist id="default_skins">
 						<option value="img/1_8_texturemap_redux.png">
 						<option value="img/hacksore.png">
@@ -234,12 +239,17 @@
 					</select>
 				</label>
 			</div>
+			<div>
+				<label>Frame Delay</label>
+				<input id="frame_delay" type="number" value="100" step="1" min="1" size="4">
+			</div>
 		</div>
 
 		<div class="control-section">
 			<h1>Cape</h1>
 			<div class="control">
-				<label>URL: <input id="cape_url" type="text" value="img/mojang_cape.png" placeholder="none" list="default_capes" size="20"></label>
+				<label>URL: <input id="cape_url" type="text" value="img/mojang_cape.png" placeholder="none" list="default_capes"
+						size="20"></label>
 				<datalist id="default_capes">
 					<option value="">
 					<option value="img/mojang_cape.png">
@@ -266,7 +276,8 @@
 				</label>
 			</div>
 			<div id="ears_texture_input">
-				<label class="control">URL: <input id="ears_url" type="text" value="" placeholder="none" list="default_ears" size="20"></label>
+				<label class="control">URL: <input id="ears_url" type="text" value="" placeholder="none" list="default_ears"
+						size="20"></label>
 				<datalist id="default_ears">
 					<option value="">
 					<option value="img/ears.png" data-texture-type="standalone">
@@ -282,7 +293,8 @@
 		<div class="control-section">
 			<h1>Panorama</h1>
 			<div class="control">
-				<label>URL: <input id="panorama_url" type="text" value="img/panorama.png" placeholder="none" list="default_panorama" size="20"></label>
+				<label>URL: <input id="panorama_url" type="text" value="img/panorama.png" placeholder="none"
+						list="default_panorama" size="20"></label>
 				<datalist id="default_panorama">
 					<option value="">
 					<option value="img/panorama.png">
@@ -325,41 +337,41 @@
 
 	<script src="../bundles/skinview3d.bundle.js"></script>
 	<script>
-		const skinParts = ["head", "body", "rightArm", "leftArm", "rightLeg", "leftLeg"];
-		const skinLayers = ["innerLayer", "outerLayer"];
+		const skinParts = ["head", "body", "rightArm", "leftArm", "rightLeg", "leftLeg"]
+		const skinLayers = ["innerLayer", "outerLayer"]
 		const availableAnimations = {
 			idle: new skinview3d.IdleAnimation(),
 			walk: new skinview3d.WalkingAnimation(),
 			run: new skinview3d.RunningAnimation(),
 			fly: new skinview3d.FlyingAnimation()
-		};
+		}
 
-		let skinViewer;
+		let skinViewer
 
 		function obtainTextureUrl(id) {
-			const urlInput = document.getElementById(id);
-			const fileInput = document.getElementById(id + "_upload");
-			const unsetButton = document.getElementById(id + "_unset");
-			const file = fileInput.files[0];
+			const urlInput = document.getElementById(id)
+			const fileInput = document.getElementById(id + "_upload")
+			const unsetButton = document.getElementById(id + "_unset")
+			const file = fileInput.files[0]
 			if (file === undefined) {
 				if (!unsetButton.classList.contains("hidden")) {
-					unsetButton.classList.add("hidden");
+					unsetButton.classList.add("hidden")
 				}
-				return urlInput.value;
+				return urlInput.value
 			} else {
-				unsetButton.classList.remove("hidden");
-				urlInput.value = `Local file: ${file.name}`;
-				urlInput.readOnly = true;
-				return URL.createObjectURL(file);
+				unsetButton.classList.remove("hidden")
+				urlInput.value = `Local file: ${file.name}`
+				urlInput.readOnly = true
+				return URL.createObjectURL(file)
 			}
 		}
 
 		function reloadSkin() {
-			const input = document.getElementById("skin_url");
-			const url = obtainTextureUrl("skin_url");
+			const input = document.getElementById("skin_url")
+			const url = obtainTextureUrl("skin_url")
 			if (url === "") {
-				skinViewer.loadSkin(null);
-				input.setCustomValidity("");
+				skinViewer.loadSkin(null)
+				input.setCustomValidity("")
 			} else {
 				skinViewer.loadSkin(url, {
 					model: document.getElementById("skin_model").value,
@@ -367,158 +379,159 @@
 				})
 					.then(() => input.setCustomValidity(""))
 					.catch(e => {
-						input.setCustomValidity("Image can't be loaded.");
-						console.error(e);
-					});
+						input.setCustomValidity("Image can't be loaded.")
+						console.error(e)
+					})
 			}
 		}
 
 		function reloadCape() {
-			const input = document.getElementById("cape_url");
-			const url = obtainTextureUrl("cape_url");
+			const input = document.getElementById("cape_url")
+			const url = obtainTextureUrl("cape_url")
 			if (url === "") {
-				skinViewer.loadCape(null);
-				input.setCustomValidity("");
+				skinViewer.loadCape(null)
+				input.setCustomValidity("")
 			} else {
-				const selectedBackEquipment = document.querySelector('input[type="radio"][name="back_equipment"]:checked');
+				const selectedBackEquipment = document.querySelector('input[type="radio"][name="back_equipment"]:checked')
 				skinViewer.loadCape(url, { backEquipment: selectedBackEquipment.value })
 					.then(() => input.setCustomValidity(""))
 					.catch(e => {
-						input.setCustomValidity("Image can't be loaded.");
-						console.error(e);
-					});
+						input.setCustomValidity("Image can't be loaded.")
+						console.error(e)
+					})
 			}
 		}
 
 		function reloadEars(skipSkinReload = false) {
-			const sourceType = document.getElementById("ears_source").value;
-			let hideInput = true;
+			const sourceType = document.getElementById("ears_source").value
+			let hideInput = true
 			if (sourceType === "none") {
-				skinViewer.loadEars(null);
+				skinViewer.loadEars(null)
 			} else if (sourceType === "current_skin") {
-				if (!skipSkinReload){
-					reloadSkin();
+				if (!skipSkinReload) {
+					reloadSkin()
 				}
 			} else {
-				hideInput = false;
+				hideInput = false
 				document.querySelectorAll("#default_ears option[data-texture-type]").forEach(opt => {
-					opt.disabled = opt.dataset.textureType !== sourceType;
-				});
+					opt.disabled = opt.dataset.textureType !== sourceType
+				})
 
-				const input = document.getElementById("ears_url");
-				const url = obtainTextureUrl("ears_url");
+				const input = document.getElementById("ears_url")
+				const url = obtainTextureUrl("ears_url")
 				if (url === "") {
-					skinViewer.loadEars(null);
-					input.setCustomValidity("");
+					skinViewer.loadEars(null)
+					input.setCustomValidity("")
 				} else {
 					skinViewer.loadEars(url, { textureType: sourceType })
 						.then(() => input.setCustomValidity(""))
 						.catch(e => {
-							input.setCustomValidity("Image can't be loaded.");
-							console.error(e);
-						});
+							input.setCustomValidity("Image can't be loaded.")
+							console.error(e)
+						})
 				}
 			}
 
-			const el = document.getElementById("ears_texture_input");
+			const el = document.getElementById("ears_texture_input")
 			if (hideInput) {
-				if (!(el.classList.contains("hidden"))){
-					el.classList.add("hidden");
+				if (!(el.classList.contains("hidden"))) {
+					el.classList.add("hidden")
 				}
 			} else {
-				el.classList.remove("hidden");
+				el.classList.remove("hidden")
 			}
 		}
 
 		function reloadPanorama() {
-			const input = document.getElementById("panorama_url");
-			const url = obtainTextureUrl("panorama_url");
+			const input = document.getElementById("panorama_url")
+			const url = obtainTextureUrl("panorama_url")
 			if (url === "") {
-				skinViewer.background = null;
-				input.setCustomValidity("");
+				skinViewer.background = null
+				input.setCustomValidity("")
 			} else {
 				skinViewer.loadPanorama(url)
 					.then(() => input.setCustomValidity(""))
 					.catch(e => {
-						input.setCustomValidity("Image can't be loaded.");
-						console.error(e);
-					});
+						input.setCustomValidity("Image can't be loaded.")
+						console.error(e)
+					})
 			}
 		}
 
 		function reloadNameTag() {
-			const text = document.getElementById("nametag_text").value;
+			const text = document.getElementById("nametag_text").value
 			if (text === "") {
-				skinViewer.nameTag = null;
+				skinViewer.nameTag = null
 			} else {
-				skinViewer.nameTag = text;
+				skinViewer.nameTag = text
 			}
 		}
 
 		function initializeControls() {
-			document.getElementById("canvas_width").addEventListener("change", e => skinViewer.width = e.target.value);
-			document.getElementById("canvas_height").addEventListener("change", e => skinViewer.height = e.target.value);
-			document.getElementById("fov").addEventListener("change", e => skinViewer.fov = e.target.value);
-			document.getElementById("zoom").addEventListener("change", e => skinViewer.zoom = e.target.value);
-			document.getElementById("global_light").addEventListener("change", e => skinViewer.globalLight.intensity = e.target.value);
-			document.getElementById("camera_light").addEventListener("change", e => skinViewer.cameraLight.intensity = e.target.value);
-			document.getElementById("animation_pause_resume").addEventListener("click", () => skinViewer.animations.paused = !skinViewer.animations.paused);
-			document.getElementById("auto_rotate").addEventListener("change", e => skinViewer.autoRotate = e.target.checked);
-			document.getElementById("auto_rotate_speed").addEventListener("change", e => skinViewer.autoRotateSpeed = e.target.value);
+			document.getElementById("canvas_width").addEventListener("change", e => skinViewer.width = e.target.value)
+			document.getElementById("canvas_height").addEventListener("change", e => skinViewer.height = e.target.value)
+			document.getElementById("fov").addEventListener("change", e => skinViewer.fov = e.target.value)
+			document.getElementById("zoom").addEventListener("change", e => skinViewer.zoom = e.target.value)
+			document.getElementById("global_light").addEventListener("change", e => skinViewer.globalLight.intensity = e.target.value)
+			document.getElementById("camera_light").addEventListener("change", e => skinViewer.cameraLight.intensity = e.target.value)
+			document.getElementById("animation_pause_resume").addEventListener("click", () => skinViewer.animations.paused = !skinViewer.animations.paused)
+			document.getElementById("auto_rotate").addEventListener("change", e => skinViewer.autoRotate = e.target.checked)
+			document.getElementById("auto_rotate_speed").addEventListener("change", e => skinViewer.autoRotateSpeed = e.target.value)
 			for (const el of document.querySelectorAll('input[type="radio"][name="animation"]')) {
 				el.addEventListener("change", e => {
 					if (e.target.value === "") {
-						skinViewer.animation = null;
+						skinViewer.animation = null
 					} else {
-						skinViewer.animation = availableAnimations[e.target.value];
-						skinViewer.animation.speed = document.getElementById("animation_speed").value;
+						skinViewer.animation = availableAnimations[e.target.value]
+						skinViewer.animation.speed = document.getElementById("animation_speed").value
 					}
-				});
+				})
 			}
 			document.getElementById("animation_speed").addEventListener("change", e => {
 				if (skinViewer.animation !== null) {
-					skinViewer.animation.speed = e.target.value;
+					skinViewer.animation.speed = e.target.value
 				}
-			});
-			document.getElementById("control_rotate").addEventListener("change", e => skinViewer.controls.enableRotate = e.target.checked);
-			document.getElementById("control_zoom").addEventListener("change", e => skinViewer.controls.enableZoom = e.target.checked);
-			document.getElementById("control_pan").addEventListener("change", e => skinViewer.controls.enablePan = e.target.checked);
+			})
+			document.getElementById("control_rotate").addEventListener("change", e => skinViewer.controls.enableRotate = e.target.checked)
+			document.getElementById("control_zoom").addEventListener("change", e => skinViewer.controls.enableZoom = e.target.checked)
+			document.getElementById("control_pan").addEventListener("change", e => skinViewer.controls.enablePan = e.target.checked)
 			for (const part of skinParts) {
 				for (const layer of skinLayers) {
 					document.querySelector(`#layers_table input[type="checkbox"][data-part="${part}"][data-layer="${layer}"]`)
-						.addEventListener("change", e => skinViewer.playerObject.skin[part][layer].visible = e.target.checked);
+						.addEventListener("change", e => skinViewer.playerObject.skin[part][layer].visible = e.target.checked)
 				}
 			}
 
 			const initializeUploadButton = (id, callback) => {
-				const urlInput = document.getElementById(id);
-				const fileInput = document.getElementById(id + "_upload");
-				const unsetButton = document.getElementById(id + "_unset");
+				const urlInput = document.getElementById(id)
+				const fileInput = document.getElementById(id + "_upload")
+				const unsetButton = document.getElementById(id + "_unset")
 				const unsetAction = () => {
-					urlInput.readOnly = false;
-					urlInput.value = "";
-					fileInput.value = fileInput.defaultValue;
-					callback();
-				};
-				fileInput.addEventListener("change", e => callback());
+					urlInput.readOnly = false
+					urlInput.value = ""
+					fileInput.value = fileInput.defaultValue
+					callback()
+				}
+				fileInput.addEventListener("change", e => callback())
 				urlInput.addEventListener("keydown", e => {
 					if (e.key === "Backspace" && urlInput.readOnly) {
-						unsetAction();
+						unsetAction()
 					}
-				});
-				unsetButton.addEventListener("click", e => unsetAction());
-			};
-			initializeUploadButton("skin_url", reloadSkin);
-			initializeUploadButton("cape_url", reloadCape);
-			initializeUploadButton("ears_url", reloadEars);
-			initializeUploadButton("panorama_url", reloadPanorama);
+				})
+				unsetButton.addEventListener("click", e => unsetAction())
+			}
+			initializeUploadButton("skin_url", reloadSkin)
+			initializeUploadButton("cape_url", reloadCape)
+			initializeUploadButton("ears_url", reloadEars)
+			initializeUploadButton("panorama_url", reloadPanorama)
 
-			document.getElementById("skin_url").addEventListener("change", () => reloadSkin());
-			document.getElementById("skin_model").addEventListener("change", () => reloadSkin());
-			document.getElementById("cape_url").addEventListener("change", () => reloadCape());
-			document.getElementById("ears_source").addEventListener("change", () => reloadEars());
-			document.getElementById("ears_url").addEventListener("change", () => reloadEars());
-			document.getElementById("panorama_url").addEventListener("change", () => reloadPanorama());
+			document.getElementById("skin_url").addEventListener("change", () => reloadSkin())
+			document.getElementById("skin_model").addEventListener("change", () => reloadSkin())
+			document.getElementById("cape_url").addEventListener("change", () => reloadCape())
+			document.getElementById("frame_delay").addEventListener("change", e => skinViewer.frameDelay = e.target.value)
+			document.getElementById("ears_source").addEventListener("change", () => reloadEars())
+			document.getElementById("ears_url").addEventListener("change", () => reloadEars())
+			document.getElementById("panorama_url").addEventListener("change", () => reloadPanorama())
 
 			for (const el of document.querySelectorAll('input[type="radio"][name="back_equipment"]')) {
 				el.addEventListener("change", e => {
@@ -526,70 +539,75 @@
 						// cape texture hasn't been loaded yet
 						// this option will be processed on texture loading
 					} else {
-						skinViewer.playerObject.backEquipment = e.target.value;
+						skinViewer.playerObject.backEquipment = e.target.value
 					}
-				});
+				})
 			}
 
 			document.getElementById("reset_all").addEventListener("click", () => {
-				skinViewer.dispose();
-				initializeViewer();
-			});
+				skinViewer.dispose()
+				initializeViewer()
+			})
 
-			document.getElementById("nametag_text").addEventListener("change", () => reloadNameTag());
+			document.getElementById("nametag_text").addEventListener("change", () => reloadNameTag())
 		}
 
 		function initializeViewer() {
 			skinViewer = new skinview3d.SkinViewer({
 				canvas: document.getElementById("skin_container")
-			});
+			})
 
-			skinViewer.width = document.getElementById("canvas_width").value;
-			skinViewer.height = document.getElementById("canvas_height").value;
-			skinViewer.fov = document.getElementById("fov").value;
-			skinViewer.zoom = document.getElementById("zoom").value;
-			skinViewer.globalLight.intensity = document.getElementById("global_light").value;
-			skinViewer.cameraLight.intensity = document.getElementById("camera_light").value;
-			skinViewer.autoRotate = document.getElementById("auto_rotate").checked;
-			skinViewer.autoRotateSpeed = document.getElementById("auto_rotate_speed").value;
-			const animationName = document.querySelector('input[type="radio"][name="animation"]:checked').value;
+
+			skinViewer.width = document.getElementById("canvas_width").value
+			skinViewer.height = document.getElementById("canvas_height").value
+			skinViewer.fov = document.getElementById("fov").value
+			skinViewer.zoom = document.getElementById("zoom").value
+			skinViewer.frameDelay = document.getElementById("frame_delay").value
+			skinViewer.globalLight.intensity = document.getElementById("global_light").value
+			skinViewer.cameraLight.intensity = document.getElementById("camera_light").value
+			skinViewer.autoRotate = document.getElementById("auto_rotate").checked
+			skinViewer.autoRotateSpeed = document.getElementById("auto_rotate_speed").value
+			const animationName = document.querySelector('input[type="radio"][name="animation"]:checked').value
 			if (animationName !== "") {
-				skinViewer.animation = availableAnimations[animationName];
-				skinViewer.animation.speed = document.getElementById("animation_speed").value;
+				skinViewer.animation = availableAnimations[animationName]
+				skinViewer.animation.speed = document.getElementById("animation_speed").value
 			}
-			skinViewer.controls.enableRotate = document.getElementById("control_rotate").checked;
-			skinViewer.controls.enableZoom = document.getElementById("control_zoom").checked;
-			skinViewer.controls.enablePan = document.getElementById("control_pan").checked;
+			skinViewer.controls.enableRotate = document.getElementById("control_rotate").checked
+			skinViewer.controls.enableZoom = document.getElementById("control_zoom").checked
+			skinViewer.controls.enablePan = document.getElementById("control_pan").checked
 			for (const part of skinParts) {
 				for (const layer of skinLayers) {
 					skinViewer.playerObject.skin[part][layer].visible =
-						document.querySelector(`#layers_table input[type="checkbox"][data-part="${part}"][data-layer="${layer}"]`).checked;
+						document.querySelector(`#layers_table input[type="checkbox"][data-part="${part}"][data-layer="${layer}"]`).checked
 				}
 			}
-			reloadSkin();
-			reloadCape();
-			reloadEars(true);
-			reloadPanorama();
-			reloadNameTag();
+			reloadSkin()
+			reloadCape()
+			reloadEars(true)
+			reloadPanorama()
+			reloadNameTag()
 		}
 
-		initializeControls();
+		initializeControls()
 		initializeViewer();
 	</script>
 
-	<script type="module" src="https://unpkg.com/stats.js@0.17.0/src/Stats.js" integrity="sha384-W71K+d2HbqXqQWSj3Vj4RDsIVvIV7lR8O6RArKAiqB39ntwLci0W08qOn4Z1n8sM" crossorigin="anonymous" async></script>
+	<script type="module" src="https://unpkg.com/stats.js@0.17.0/src/Stats.js"
+		integrity="sha384-W71K+d2HbqXqQWSj3Vj4RDsIVvIV7lR8O6RArKAiqB39ntwLci0W08qOn4Z1n8sM" crossorigin="anonymous"
+		async></script>
 	<script type="module" async>
-		import Stats from "https://unpkg.com/stats.js@0.17.0/src/Stats.js";
-		const stats = new Stats();
-		stats.dom.style.left = "";
-		stats.dom.style.right = "0";
-		document.body.appendChild(stats.dom);
+		import Stats from "https://unpkg.com/stats.js@0.17.0/src/Stats.js"
+		const stats = new Stats()
+		stats.dom.style.left = ""
+		stats.dom.style.right = "0"
+		document.body.appendChild(stats.dom)
 		function loop() {
-			stats.update();
+			stats.update()
 			requestAnimationFrame(loop)
 		}
 		requestAnimationFrame(loop);
 	</script>
 
 </body>
+
 </html>

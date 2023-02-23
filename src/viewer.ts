@@ -1,7 +1,41 @@
-import { inferModelType, isTextureSource, loadCapeToCanvas, loadEarsToCanvas, loadEarsToCanvasFromSkin, loadImage, loadSkinToCanvas, ModelType, RemoteImage, TextureSource } from "skinview-utils";
-import { Color, ColorRepresentation, PointLight, EquirectangularReflectionMapping, Group, NearestFilter, PerspectiveCamera, Scene, Texture, Vector2, WebGLRenderer, AmbientLight, Mapping, CanvasTexture, WebGLRenderTarget, FloatType, DepthTexture, Clock, Object3D } from "three";
+import {
+	inferModelType,
+	isTextureSource,
+	loadCapeToCanvas,
+	loadEarsToCanvas,
+	loadEarsToCanvasFromSkin,
+	loadImage,
+	loadSkinToCanvas,
+	ModelType,
+	RemoteImage,
+	TextureSource,
+} from "skinview-utils";
+import {
+	AmbientLight,
+	CanvasTexture,
+	Clock,
+	Color,
+	ColorRepresentation,
+	DepthTexture,
+	EquirectangularReflectionMapping,
+	FloatType,
+	Group,
+	Mapping,
+	NearestFilter,
+	Object3D,
+	PerspectiveCamera,
+	PointLight,
+	Scene,
+	Texture,
+	Vector2,
+	WebGLRenderer,
+	WebGLRenderTarget,
+} from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { EffectComposer, FullScreenQuad } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import {
+	EffectComposer,
+	FullScreenQuad,
+} from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
@@ -10,18 +44,15 @@ import { BackEquipment, PlayerObject } from "./model.js";
 import { NameTagObject } from "./nametag.js";
 
 export interface LoadOptions {
-
 	/**
 	 * Whether to make the object visible after the texture is loaded.
 	 *
 	 * @defaultValue `true`
 	 */
 	makeVisible?: boolean;
-
 }
 
 export interface SkinLoadOptions extends LoadOptions {
-
 	/**
 	 * The model of the player (`"default"` for normal arms, and `"slim"` for slim arms).
 	 *
@@ -42,11 +73,9 @@ export interface SkinLoadOptions extends LoadOptions {
 	 * @defaultValue `false`
 	 */
 	ears?: boolean | "load-only";
-
 }
 
 export interface CapeLoadOptions extends LoadOptions {
-
 	/**
 	 * The equipment (`"cape"` or `"elytra"`) to show when the cape texture is loaded.
 	 *
@@ -55,11 +84,9 @@ export interface CapeLoadOptions extends LoadOptions {
 	 * @defaultValue `"cape"`
 	 */
 	backEquipment?: BackEquipment;
-
 }
 
 export interface EarsLoadOptions extends LoadOptions {
-
 	/**
 	 * The type of the provided ear texture.
 	 *
@@ -69,11 +96,9 @@ export interface EarsLoadOptions extends LoadOptions {
 	 * @defaultValue `"standalone"`
 	 */
 	textureType?: "standalone" | "skin";
-
 }
 
 export interface SkinViewerOptions {
-
 	/**
 	 * The canvas where the renderer draws its output.
 	 *
@@ -138,10 +163,12 @@ export interface SkinViewerOptions {
 	 *
 	 * @defaultValue If unspecified, the ears will be invisible.
 	 */
-	ears?: "current-skin" | {
-		textureType: "standalone" | "skin",
-		source: RemoteImage | TextureSource
-	}
+	ears?:
+		| "current-skin"
+		| {
+				textureType: "standalone" | "skin";
+				source: RemoteImage | TextureSource;
+		  };
 
 	/**
 	 * Whether to preserve the buffers until manually cleared or overwritten.
@@ -220,13 +247,20 @@ export interface SkinViewerOptions {
 	 * @see {@link SkinViewer.nameTag}
 	 */
 	nameTag?: NameTagObject | string;
+
+	/**
+	 * The delay between frames when a displaying an animated cape.
+	 *
+	 * @defaultValue `100`
+	 * @see {@link SkinViewer.animatedCape}
+	 */
+	frameDelay?: number;
 }
 
 /**
  * The SkinViewer renders the player on a canvas.
  */
 export class SkinViewer {
-
 	/**
 	 * The canvas where the renderer draws its output.
 	 */
@@ -271,6 +305,8 @@ export class SkinViewer {
 	private earsTexture: Texture | null = null;
 	private backgroundTexture: Texture | null = null;
 
+	private _frameDelay: number = 100;
+
 	private _disposed: boolean = false;
 	private _renderPaused: boolean = false;
 	private _zoom: number;
@@ -304,7 +340,10 @@ export class SkinViewer {
 	private _nameTag: NameTagObject | null = null;
 
 	constructor(options: SkinViewerOptions = {}) {
-		this.canvas = options.canvas === undefined ? document.createElement("canvas") : options.canvas;
+		this.canvas =
+			options.canvas === undefined
+				? document.createElement("canvas")
+				: options.canvas;
 
 		this.skinCanvas = document.createElement("canvas");
 		this.capeCanvas = document.createElement("canvas");
@@ -318,7 +357,7 @@ export class SkinViewer {
 
 		this.renderer = new WebGLRenderer({
 			canvas: this.canvas,
-			preserveDrawingBuffer: options.preserveDrawingBuffer === true // default: false
+			preserveDrawingBuffer: options.preserveDrawingBuffer === true, // default: false
 		});
 
 		this.onDevicePixelRatioChange = () => {
@@ -326,14 +365,29 @@ export class SkinViewer {
 			this.updateComposerSize();
 
 			if (this._pixelRatio === "match-device") {
-				this.devicePixelRatioQuery = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
-				this.devicePixelRatioQuery.addEventListener("change", this.onDevicePixelRatioChange, { once: true });
+				this.devicePixelRatioQuery = matchMedia(
+					`(resolution: ${window.devicePixelRatio}dppx)`
+				);
+				this.devicePixelRatioQuery.addEventListener(
+					"change",
+					this.onDevicePixelRatioChange,
+					{ once: true }
+				);
 			}
 		};
-		if (options.pixelRatio === undefined || options.pixelRatio === "match-device") {
+		if (
+			options.pixelRatio === undefined ||
+			options.pixelRatio === "match-device"
+		) {
 			this._pixelRatio = "match-device";
-			this.devicePixelRatioQuery = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
-			this.devicePixelRatioQuery.addEventListener("change", this.onDevicePixelRatioChange, { once: true });
+			this.devicePixelRatioQuery = matchMedia(
+				`(resolution: ${window.devicePixelRatio}dppx)`
+			);
+			this.devicePixelRatioQuery.addEventListener(
+				"change",
+				this.onDevicePixelRatioChange,
+				{ once: true }
+			);
 			this.renderer.setPixelRatio(window.devicePixelRatio);
 		} else {
 			this._pixelRatio = options.pixelRatio;
@@ -348,7 +402,7 @@ export class SkinViewer {
 			// Use float precision depth if possible
 			// see https://github.com/bs-community/skinview3d/issues/111
 			renderTarget = new WebGLRenderTarget(0, 0, {
-				depthTexture: new DepthTexture(0, 0, FloatType)
+				depthTexture: new DepthTexture(0, 0, FloatType),
 			});
 		}
 		this.composer = new EffectComposer(this.renderer, renderTarget);
@@ -377,7 +431,7 @@ export class SkinViewer {
 		if (options.skin !== undefined) {
 			this.loadSkin(options.skin, {
 				model: options.model,
-				ears: options.ears === "current-skin"
+				ears: options.ears === "current-skin",
 			});
 		}
 		if (options.cape !== undefined) {
@@ -385,7 +439,7 @@ export class SkinViewer {
 		}
 		if (options.ears !== undefined && options.ears !== "current-skin") {
 			this.loadEars(options.ears.source, {
-				textureType: options.ears.textureType
+				textureType: options.ears.textureType,
 			});
 		}
 		if (options.width !== undefined) {
@@ -403,11 +457,14 @@ export class SkinViewer {
 		if (options.nameTag !== undefined) {
 			this.nameTag = options.nameTag;
 		}
+		this._frameDelay =
+			options.frameDelay === undefined ? 100 : options.frameDelay;
 		this.camera.position.z = 1;
 		this._zoom = options.zoom === undefined ? 0.9 : options.zoom;
 		this.fov = options.fov === undefined ? 50 : options.fov;
 
-		this._animation = options.animation === undefined ? null : options.animation;
+		this._animation =
+			options.animation === undefined ? null : options.animation;
 		this.clock = new Clock();
 
 		if (options.renderPaused === true) {
@@ -433,15 +490,21 @@ export class SkinViewer {
 		};
 
 		this.canvas.addEventListener("webglcontextlost", this.onContextLost, false);
-		this.canvas.addEventListener("webglcontextrestored", this.onContextRestored, false);
+		this.canvas.addEventListener(
+			"webglcontextrestored",
+			this.onContextRestored,
+			false
+		);
 	}
 
 	private updateComposerSize(): void {
 		this.composer.setSize(this.width, this.height);
 		const pixelRatio = this.renderer.getPixelRatio();
 		this.composer.setPixelRatio(pixelRatio);
-		this.fxaaPass.material.uniforms["resolution"].value.x = 1 / (this.width * pixelRatio);
-		this.fxaaPass.material.uniforms["resolution"].value.y = 1 / (this.height * pixelRatio);
+		this.fxaaPass.material.uniforms["resolution"].value.x =
+			1 / (this.width * pixelRatio);
+		this.fxaaPass.material.uniforms["resolution"].value.y =
+			1 / (this.height * pixelRatio);
 	}
 
 	private recreateSkinTexture(): void {
@@ -487,7 +550,6 @@ export class SkinViewer {
 	): void | Promise<void> {
 		if (source === null) {
 			this.resetSkin();
-
 		} else if (isTextureSource(source)) {
 			loadSkinToCanvas(this.skinCanvas, source);
 			this.recreateSkinTexture();
@@ -509,9 +571,8 @@ export class SkinViewer {
 					this.playerObject.ears.visible = true;
 				}
 			}
-
 		} else {
-			return loadImage(source).then(image => this.loadSkin(image, options));
+			return loadImage(source).then((image) => this.loadSkin(image, options));
 		}
 	}
 
@@ -522,6 +583,32 @@ export class SkinViewer {
 			this.skinTexture.dispose();
 			this.skinTexture = null;
 		}
+	}
+
+	private lastFrameTime: number = 0;
+	private capeSource?: TextureSource;
+	private capeOptions: CapeLoadOptions = {};
+	private totalFrames = 1;
+	private currentFrame = 1;
+	animatedCape(): void {
+		const currentTime: number = Date.now();
+		if (this.lastFrameTime + +this._frameDelay > currentTime) return;
+		this.lastFrameTime = currentTime;
+
+		if (this.capeSource != null && this.totalFrames > 1) {
+			this.loadCape(this.capeSource, this.capeOptions);
+
+			//Increase frames
+			this.currentFrame++;
+		}
+	}
+
+	get frameDelay(): number {
+		return this._frameDelay;
+	}
+
+	set frameDelay(value: number) {
+		this._frameDelay = value;
 	}
 
 	loadCape(empty: null): void;
@@ -536,21 +623,36 @@ export class SkinViewer {
 	): void | Promise<void> {
 		if (source === null) {
 			this.resetCape();
-
 		} else if (isTextureSource(source)) {
-			loadCapeToCanvas(this.capeCanvas, source);
+			this.capeSource = source;
+			this.capeOptions = options;
+			this.totalFrames = source.height / (source.width / 2);
+
+			if (!Number.isInteger(this.totalFrames)) {
+				this.totalFrames = 1;
+			}
+
+			if (this.currentFrame > this.totalFrames) {
+				this.currentFrame = 1;
+			}
+
+			loadCapeToCanvas(this.capeCanvas, source, this.currentFrame);
+
 			this.recreateCapeTexture();
 
 			if (options.makeVisible !== false) {
-				this.playerObject.backEquipment = options.backEquipment === undefined ? "cape" : options.backEquipment;
+				this.playerObject.backEquipment =
+					options.backEquipment === undefined ? "cape" : options.backEquipment;
 			}
-
 		} else {
-			return loadImage(source).then(image => this.loadCape(image, options));
+			return loadImage(source).then((image) => this.loadCape(image, options));
 		}
 	}
 
 	resetCape(): void {
+		this.totalFrames = 1;
+		this.currentFrame = 1;
+
 		this.playerObject.backEquipment = null;
 		this.playerObject.cape.map = null;
 		this.playerObject.elytra.map = null;
@@ -572,7 +674,6 @@ export class SkinViewer {
 	): void | Promise<void> {
 		if (source === null) {
 			this.resetEars();
-
 		} else if (isTextureSource(source)) {
 			if (options.textureType === "skin") {
 				loadEarsToCanvasFromSkin(this.earsCanvas, source);
@@ -584,9 +685,8 @@ export class SkinViewer {
 			if (options.makeVisible !== false) {
 				this.playerObject.ears.visible = true;
 			}
-
 		} else {
-			return loadImage(source).then(image => this.loadEars(image, options));
+			return loadImage(source).then((image) => this.loadEars(image, options));
 		}
 	}
 
@@ -626,12 +726,14 @@ export class SkinViewer {
 			this.backgroundTexture.needsUpdate = true;
 			this.scene.background = this.backgroundTexture;
 		} else {
-			return loadImage(source).then(image => this.loadBackground(image, mapping));
+			return loadImage(source).then((image) =>
+				this.loadBackground(image, mapping)
+			);
 		}
 	}
 
 	private draw(): void {
-		const dt = this.clock.getDelta()
+		const dt = this.clock.getDelta();
 		if (this._animation !== null) {
 			this._animation.update(this.playerObject, dt);
 		}
@@ -639,14 +741,17 @@ export class SkinViewer {
 			this.playerWrapper.rotation.y += dt * this.autoRotateSpeed;
 		}
 		this.controls.update();
+
+		this.animatedCape();
+
 		this.render();
 		this.animationID = window.requestAnimationFrame(() => this.draw());
 	}
 
 	/**
-	* Renders the scene to the canvas.
-	* This method does not change the animation progress.
-	*/
+	 * Renders the scene to the canvas.
+	 * This method does not change the animation progress.
+	 */
 	render(): void {
 		this.composer.render();
 	}
@@ -661,11 +766,22 @@ export class SkinViewer {
 	dispose(): void {
 		this._disposed = true;
 
-		this.canvas.removeEventListener("webglcontextlost", this.onContextLost, false);
-		this.canvas.removeEventListener("webglcontextrestored", this.onContextRestored, false);
+		this.canvas.removeEventListener(
+			"webglcontextlost",
+			this.onContextLost,
+			false
+		);
+		this.canvas.removeEventListener(
+			"webglcontextrestored",
+			this.onContextRestored,
+			false
+		);
 
 		if (this.devicePixelRatioQuery !== null) {
-			this.devicePixelRatioQuery.removeEventListener("change", this.onDevicePixelRatioChange);
+			this.devicePixelRatioQuery.removeEventListener(
+				"change",
+				this.onDevicePixelRatioChange
+			);
 			this.devicePixelRatioQuery = null;
 		}
 
@@ -704,7 +820,12 @@ export class SkinViewer {
 			this.animationID = null;
 			this.clock.stop();
 			this.clock.autoStart = true;
-		} else if (!this._renderPaused && !this._disposed && !this.renderer.getContext().isContextLost() && this.animationID == null) {
+		} else if (
+			!this._renderPaused &&
+			!this._disposed &&
+			!this.renderer.getContext().isContextLost() &&
+			this.animationID == null
+		) {
 			this.animationID = window.requestAnimationFrame(() => this.draw());
 		}
 	}
@@ -742,7 +863,8 @@ export class SkinViewer {
 	}
 
 	adjustCameraDistance(): void {
-		let distance = 4.5 + 16.5 / Math.tan(this.fov / 180 * Math.PI / 2) / this.zoom;
+		let distance =
+			4.5 + 16.5 / Math.tan(((this.fov / 180) * Math.PI) / 2) / this.zoom;
 
 		// limit distance between 10 ~ 256 (default min / max distance of OrbitControls)
 		if (distance < 10) {
@@ -751,7 +873,9 @@ export class SkinViewer {
 			distance = 256;
 		}
 
-		this.camera.position.multiplyScalar(distance / this.camera.position.length());
+		this.camera.position.multiplyScalar(
+			distance / this.camera.position.length()
+		);
 		this.camera.updateProjectionMatrix();
 	}
 
@@ -790,8 +914,14 @@ export class SkinViewer {
 				this.onDevicePixelRatioChange();
 			}
 		} else {
-			if (this._pixelRatio === "match-device" && this.devicePixelRatioQuery !== null) {
-				this.devicePixelRatioQuery.removeEventListener("change", this.onDevicePixelRatioChange);
+			if (
+				this._pixelRatio === "match-device" &&
+				this.devicePixelRatioQuery !== null
+			) {
+				this.devicePixelRatioQuery.removeEventListener(
+					"change",
+					this.onDevicePixelRatioChange
+				);
 				this.devicePixelRatioQuery = null;
 			}
 			this._pixelRatio = newValue;
