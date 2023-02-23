@@ -9,7 +9,7 @@ import {
 	ModelType,
 	RemoteImage,
 	TextureSource,
-} from "skinview-utils";
+} from "@silent-client/skinview-utils";
 import {
 	AmbientLight,
 	CanvasTexture,

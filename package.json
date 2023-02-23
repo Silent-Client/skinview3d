@@ -1,5 +1,5 @@
 {
-	"name": "skinview3d",
+	"name": "@silent-client/skinview3d",
 	"version": "3.0.0-alpha.1",
 	"description": "Three.js powered Minecraft skin viewer",
 	"main": "libs/skinview3d.js",
@@ -19,7 +19,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/bs-community/skinview3d.git"
+		"url": "git+https://github.com/Silent-Client/skinview3d.git"
 	},
 	"author": "Haowei Wen <yushijinhun@gmail.com> (https://github.com/yushijinhun)",
 	"contributors": [
@@ -40,7 +40,7 @@
 	],
 	"dependencies": {
 		"@types/three": "^0.148.0",
-		"skinview-utils": "^0.7.0",
+		"@silent-client/skinview-utils": "^0.7.0",
 		"three": "^0.148.0"
 	},
 	"devDependencies": {

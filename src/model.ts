@@ -1,4 +1,4 @@
-import { ModelType } from "skinview-utils";
+import { ModelType } from "@silent-client/skinview-utils";
 import {
 	BoxGeometry,
 	DoubleSide,
